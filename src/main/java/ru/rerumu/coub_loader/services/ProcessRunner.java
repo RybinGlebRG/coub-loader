@@ -22,7 +22,7 @@ public class ProcessRunner {
         this.args = args;
     }
 
-    void run()throws IOException, InterruptedException, ExecutionException {
+    public void run()throws IOException, InterruptedException, ExecutionException {
         ProcessBuilder pb = new ProcessBuilder(args);
         Process process = pb.start();
         BufferedInputStream bufferedInputStream = new BufferedInputStream(process.getInputStream());

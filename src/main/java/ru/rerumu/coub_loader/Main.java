@@ -1,5 +1,6 @@
 package ru.rerumu.coub_loader;
 
+import ru.rerumu.coub_loader.api.FFmpegAPI;
 import ru.rerumu.coub_loader.repositories.LocalCoubRepository;
 import ru.rerumu.coub_loader.services.URILoader;
 import ru.rerumu.coub_loader.services.CoubProcessor;
@@ -18,9 +19,10 @@ public class Main {
             LocalCoubRepository coubRepository = new LocalCoubRepository(
                     Paths.get(configuration.getProperty("coub_repository.dir"))
             );
+            FFmpegAPI ffmpegAPI = new FFmpegAPI(Paths.get(configuration.getProperty("ffmpeg.path")));
             StreamMerger streamMerger = new StreamMerger(
                     Paths.get(configuration.getProperty("stream_merger.tmp_dir")),
-                    Paths.get(configuration.getProperty("ffmpeg.path"))
+                    ffmpegAPI
             );
             URILoader uriLoader = new URILoader();
             URIRepository uriRepository = new URIRepository(uriLoader);

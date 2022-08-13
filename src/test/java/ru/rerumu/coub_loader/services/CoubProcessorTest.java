@@ -1,6 +1,7 @@
 package ru.rerumu.coub_loader.services;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -66,6 +67,8 @@ class CoubProcessorTest {
         inOrder.verify(streamMerger).merge(Mockito.anyLong(),Mockito.eq(video),Mockito.eq(audioPath));
         inOrder.verify(localCoubRepository).saveMerged(merged);
         inOrder.verify(localCoubRepository).saveMeta(coub);
+
+        Mockito.verify(streamMerger, Mockito.never()).merge(Mockito.anyLong(),Mockito.any());
     }
 
     @Test
@@ -86,7 +89,7 @@ class CoubProcessorTest {
                 .thenReturn(video);
         Mockito.when(uriRepository.saveAudio(Mockito.any(), Mockito.any()))
                 .thenReturn(Optional.empty());
-        Mockito.when(streamMerger.merge(Mockito.anyLong(), Mockito.any(), Mockito.any()))
+        Mockito.when(streamMerger.merge(Mockito.anyLong(), Mockito.any()))
                 .thenReturn(merged);
 
 
@@ -100,6 +103,8 @@ class CoubProcessorTest {
         inOrder.verify(streamMerger).merge(Mockito.anyLong(),Mockito.eq(video));
         inOrder.verify(localCoubRepository).saveMerged(merged);
         inOrder.verify(localCoubRepository).saveMeta(coub);
+
+        Mockito.verify(streamMerger, Mockito.never()).merge(Mockito.anyLong(),Mockito.any(),Mockito.any());
     }
 
     @Test
