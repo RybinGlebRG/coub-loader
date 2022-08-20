@@ -2,12 +2,13 @@ package ru.rerumu.coub_loader;
 
 import ru.rerumu.coub_loader.api.FFmpegAPI;
 import ru.rerumu.coub_loader.factories.CoubChannelAPIFactory;
-import ru.rerumu.coub_loader.repositories.LocalCoubRepository;
+import ru.rerumu.coub_loader.repositories.AudioRepository;
+import ru.rerumu.coub_loader.repositories.CoubRepository;
+import ru.rerumu.coub_loader.repositories.VideoRepository;
 import ru.rerumu.coub_loader.services.URILoader;
 import ru.rerumu.coub_loader.services.CoubProcessor;
 import ru.rerumu.coub_loader.services.LikesLoader;
 import ru.rerumu.coub_loader.services.StreamMerger;
-import ru.rerumu.coub_loader.repositories.URIRepository;
 
 import java.nio.file.Paths;
 
@@ -17,7 +18,7 @@ public class Main {
         try {
             Configuration configuration = new Configuration();
 
-            LocalCoubRepository coubRepository = new LocalCoubRepository(
+            CoubRepository coubRepository = new CoubRepository(
                     Paths.get(configuration.getProperty("coub_repository.dir"))
             );
             FFmpegAPI ffmpegAPI = new FFmpegAPI(Paths.get(configuration.getProperty("ffmpeg.path")));
@@ -26,12 +27,19 @@ public class Main {
                     ffmpegAPI
             );
             URILoader uriLoader = new URILoader();
-            URIRepository uriRepository = new URIRepository(uriLoader);
+            AudioRepository audioRepository = new AudioRepository(
+                    Paths.get(configuration.getProperty("audio_repository.dir")),
+                    uriLoader
+            );
+            VideoRepository videoRepository = new VideoRepository(
+                    Paths.get(configuration.getProperty("video_repository.dir")),
+                    uriLoader
+            );
             CoubProcessor coubProcessor = new CoubProcessor(
                     coubRepository,
                     streamMerger,
-                    Paths.get(configuration.getProperty("coub_processor.tmp_dir")),
-                    uriRepository
+                    audioRepository,
+                    videoRepository
                     );
             LikesLoader likesLoader = new LikesLoader(
                     coubProcessor,

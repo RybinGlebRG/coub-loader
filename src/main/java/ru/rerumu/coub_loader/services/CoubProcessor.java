@@ -5,51 +5,31 @@ import org.slf4j.LoggerFactory;
 import ru.rerumu.coub_loader.exceptions.CoubAlreadyProcessedException;
 import ru.rerumu.coub_loader.exceptions.MergeException;
 import ru.rerumu.coub_loader.models.Coub;
-import ru.rerumu.coub_loader.repositories.LocalCoubRepository;
-import ru.rerumu.coub_loader.repositories.URIRepository;
+import ru.rerumu.coub_loader.repositories.AudioRepository;
+import ru.rerumu.coub_loader.repositories.CoubRepository;
+import ru.rerumu.coub_loader.repositories.VideoRepository;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CoubProcessor {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final LocalCoubRepository localCoubRepository;
+    private final CoubRepository coubRepository;
     private final StreamMerger streamMerger;
-    private final Path tmpDir;
-    private final URIRepository uriRepository;
+    private final AudioRepository audioRepository;
+    private final VideoRepository videoRepository;
 
-    public CoubProcessor(LocalCoubRepository localCoubRepository,
+    public CoubProcessor(CoubRepository coubRepository,
                          StreamMerger streamMerger,
-                         Path tmpDir,
-                         URIRepository uriRepository){
-        this.localCoubRepository = localCoubRepository;
+                         AudioRepository audioRepository,
+                         VideoRepository videoRepository){
+        this.coubRepository = coubRepository;
         this.streamMerger = streamMerger;
-        this.tmpDir = tmpDir;
-        this.uriRepository = uriRepository;
-    }
-
-    private void clearTmp() throws IOException {
-        List<Path> filesToDelete;
-        try(Stream<Path> pathStream = Files.walk(tmpDir)) {
-            filesToDelete = pathStream
-                    .filter(path-> !path.equals(tmpDir))
-                    .sorted(Comparator.reverseOrder())
-                    .collect(Collectors.toCollection(ArrayList::new));
-        }
-
-        for (Path path: filesToDelete){
-            Files.delete(path);
-        }
+        this.audioRepository = audioRepository;
+        this.videoRepository = videoRepository;
     }
 
     public void process(Coub coub)
@@ -58,16 +38,14 @@ public class CoubProcessor {
             URISyntaxException,
             MergeException {
         logger.info(String.format("Processing coubId='%d'",coub.getId()));
-        if (localCoubRepository.contains(coub)){
+        if (coubRepository.contains(coub)){
             logger.error("Coub already processed");
             throw new CoubAlreadyProcessedException();
         }
 
-        clearTmp();
-
-        Path video = uriRepository.saveVideo(coub,tmpDir);
+        Path video = videoRepository.getVideo(coub);
         logger.debug(String.format("Got video '%s'",video.toString()));
-        Optional<Path> audio = uriRepository.saveAudio(coub,tmpDir);
+        Optional<Path> audio = audioRepository.getAudio(coub);
         logger.debug(String.format("Got audio '%s'", audio.map(Path::toString).orElse("empty (no audio)")));
 
         Path merged;
@@ -79,9 +57,9 @@ public class CoubProcessor {
             merged = streamMerger.merge(coub.getId(),video);
         }
         logger.debug("Finished merging");
-        localCoubRepository.saveMerged(merged);
+        coubRepository.saveMerged(merged);
         logger.debug("Saved merged");
-        localCoubRepository.saveMeta(coub);
+        coubRepository.saveMeta(coub);
         logger.debug("Saved meta");
         logger.info("Finished processing");
     }

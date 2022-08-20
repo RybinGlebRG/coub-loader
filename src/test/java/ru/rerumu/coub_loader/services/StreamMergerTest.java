@@ -84,8 +84,6 @@ class StreamMergerTest {
         Assertions.assertFalse(Files.exists(tmpDir.resolve("test.txt")));
         Assertions.assertFalse(Files.exists(tmpDir.resolve("test_res.mkv")));
         Assertions.assertFalse(Files.exists(tmpDir.resolve("test.mkv")));
-
-        // TODO: write
     }
 
 }

@@ -3,31 +3,19 @@ package ru.rerumu.coub_loader.repositories;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.rerumu.coub_loader.exceptions.NoAudioLinkException;
 import ru.rerumu.coub_loader.models.Coub;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LocalCoubRepository {
+public class CoubRepository {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Path metaDir;
     private final Path coubDir;
@@ -35,7 +23,7 @@ public class LocalCoubRepository {
 
 
 
-    public LocalCoubRepository(Path repositoryDir) throws IOException {
+    public CoubRepository(Path repositoryDir) throws IOException {
         this.metaDir = repositoryDir.resolve("coub_meta");
         this.coubDir = repositoryDir.resolve("coub");
         try (Stream<Path> pathStream = Files.walk(metaDir)) {
