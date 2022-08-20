@@ -64,8 +64,28 @@ class StreamMergerTest {
         Mockito.verify(ffmpegAPI).merge(tmpDir.resolve("conf.txt"), tmpDir.resolve("temp_res.mkv"));
     }
 
-//    void shouldClear(){
-//        // TODO: write
-//    }
+    @Test
+    void shouldClear()throws Exception{
+        Files.createFile(tmpDir.resolve("test.txt"));
+        Files.createFile(tmpDir.resolve("test_res.mkv"));
+        Files.createFile(tmpDir.resolve("test.mkv"));
+
+
+        Path video = Paths.get("/tst.mp4");
+        Path audio = Paths.get("/tst.mp3");
+        StreamMerger streamMerger = new StreamMerger(tmpDir, ffmpegAPI);
+
+
+        Mockito.doAnswer(invocationOnMock -> Files.createFile(tmpDir.resolve("temp_res.mkv")))
+                .when(ffmpegAPI).merge(Mockito.any(), Mockito.any(), Mockito.any());
+
+        Path res = streamMerger.merge(1111L, video, audio);
+
+        Assertions.assertFalse(Files.exists(tmpDir.resolve("test.txt")));
+        Assertions.assertFalse(Files.exists(tmpDir.resolve("test_res.mkv")));
+        Assertions.assertFalse(Files.exists(tmpDir.resolve("test.mkv")));
+
+        // TODO: write
+    }
 
 }

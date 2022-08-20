@@ -1,6 +1,7 @@
 package ru.rerumu.coub_loader;
 
 import ru.rerumu.coub_loader.api.FFmpegAPI;
+import ru.rerumu.coub_loader.factories.CoubChannelAPIFactory;
 import ru.rerumu.coub_loader.repositories.LocalCoubRepository;
 import ru.rerumu.coub_loader.services.URILoader;
 import ru.rerumu.coub_loader.services.CoubProcessor;
@@ -32,7 +33,10 @@ public class Main {
                     Paths.get(configuration.getProperty("coub_processor.tmp_dir")),
                     uriRepository
                     );
-            LikesLoader likesLoader = new LikesLoader(coubProcessor);
+            LikesLoader likesLoader = new LikesLoader(
+                    coubProcessor,
+                    new CoubChannelAPIFactory()
+            );
 
             likesLoader.load(configuration.getProperty("channel"));
 

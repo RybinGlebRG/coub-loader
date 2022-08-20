@@ -14,14 +14,14 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoubChannel {
+public class CoubChannelAPI {
 
     private final int page=1;
     private final int perPage=25;
 
     private final String channel;
 
-    public CoubChannel(String channel){
+    public CoubChannelAPI(String channel){
         this.channel = channel;
     }
 
