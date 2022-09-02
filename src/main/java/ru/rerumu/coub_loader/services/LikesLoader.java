@@ -26,7 +26,7 @@ public class LikesLoader {
         int totalPages = coubChannelAPI.getTotalPages();
         for (int i = 1; i <= totalPages; i++) {
             List<Coub> coubList = coubChannelAPI.getPage(i);
-
+            logger.info(String.format("Processing page '%d' out of '%d'",i,totalPages));
             for (Coub coub : coubList) {
                 try {
                     coubProcessor.process(coub);
