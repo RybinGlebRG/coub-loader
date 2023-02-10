@@ -22,10 +22,10 @@ public class LikesLoader {
     }
 
     public void load(String channel) throws URISyntaxException, IOException, InterruptedException, HttpErrorException {
-        CoubChannelAPI coubChannelAPI = coubChannelAPIFactory.getCoubChannelAPI(channel);
-        int totalPages = coubChannelAPI.getTotalPages();
+        CoubChannelAPI coubChannel = coubChannelAPIFactory.getCoubChannelAPI(channel);
+        int totalPages = coubChannel.getTotalPages();
         for (int i = 1; i <= totalPages; i++) {
-            List<Coub> coubList = coubChannelAPI.getPage(i);
+            List<Coub> coubList = coubChannel.getPage(i);
             logger.info(String.format("Processing page '%d' out of '%d'",i,totalPages));
             for (Coub coub : coubList) {
                 try {

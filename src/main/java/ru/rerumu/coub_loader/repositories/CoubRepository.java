@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.rerumu.coub_loader.models.Coub;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,19 +19,27 @@ public class CoubRepository {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Path metaDir;
     private final Path coubDir;
+
+    private final Path metaFile;
     private final List<Long> presentCoubs;
 
 
 
     public CoubRepository(Path repositoryDir) throws IOException {
         this.metaDir = repositoryDir.resolve("coub_meta");
+        if (Files.notExists(metaDir)) {
+            Files.createDirectory(metaDir);
+        }
         this.coubDir = repositoryDir.resolve("coub");
-        try (Stream<Path> pathStream = Files.walk(metaDir)) {
-            presentCoubs = pathStream
-                    .filter(path->!path.equals(metaDir))
-                    .map(path -> Long.parseLong(FilenameUtils.removeExtension(path.getFileName().toString())))
+        if (Files.notExists(coubDir)) {
+            Files.createDirectory(coubDir);
+        }
+        this.metaFile = repositoryDir.resolve("meta.lst");
+        try(BufferedReader bufferedReader = Files.newBufferedReader(metaFile,StandardCharsets.UTF_8)){
+            presentCoubs = bufferedReader.lines()
+                    .mapToLong(Long::valueOf)
+                    .boxed()
                     .collect(Collectors.toCollection(ArrayList::new));
-
         }
     }
 
@@ -46,6 +54,14 @@ public class CoubRepository {
                 StandardCharsets.UTF_8,
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+        Files.writeString(
+                metaFile,
+                Long.toString(coub.getId())+"\n",
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND,
                 StandardOpenOption.WRITE
         );
     }

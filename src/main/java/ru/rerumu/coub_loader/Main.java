@@ -1,7 +1,7 @@
 package ru.rerumu.coub_loader;
 
 import ru.rerumu.coub_loader.api.FFmpegAPI;
-import ru.rerumu.coub_loader.factories.CoubChannelAPIFactory;
+import ru.rerumu.coub_loader.factories.*;
 import ru.rerumu.coub_loader.repositories.AudioRepository;
 import ru.rerumu.coub_loader.repositories.CoubRepository;
 import ru.rerumu.coub_loader.repositories.VideoRepository;
@@ -10,6 +10,7 @@ import ru.rerumu.coub_loader.services.CoubProcessor;
 import ru.rerumu.coub_loader.services.LikesLoader;
 import ru.rerumu.coub_loader.services.StreamMerger;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Main {
@@ -18,23 +19,17 @@ public class Main {
         try {
             Configuration configuration = new Configuration();
 
-            CoubRepository coubRepository = new CoubRepository(
-                    Paths.get(configuration.getProperty("coub_repository.dir"))
-            );
-            FFmpegAPI ffmpegAPI = new FFmpegAPI(Paths.get(configuration.getProperty("ffmpeg.path")));
-            StreamMerger streamMerger = new StreamMerger(
-                    Paths.get(configuration.getProperty("stream_merger.tmp_dir")),
-                    ffmpegAPI
-            );
+            Path appDir = Paths.get(configuration.getProperty("COUB_LOADER_DIR"));
+            FFmpegAPI ffmpegAPI = new FFmpegAPI(Paths.get(configuration.getProperty("COUB_LOADER_FFMPEG")));
             URILoader uriLoader = new URILoader();
-            AudioRepository audioRepository = new AudioRepository(
-                    Paths.get(configuration.getProperty("audio_repository.dir")),
-                    uriLoader
-            );
-            VideoRepository videoRepository = new VideoRepository(
-                    Paths.get(configuration.getProperty("video_repository.dir")),
-                    uriLoader
-            );
+
+            var temporaryRepositoryFactory = new TemporaryRepositoryFactory(appDir);
+
+            StreamMerger streamMerger = temporaryRepositoryFactory.getStreamMerger(ffmpegAPI);
+            AudioRepository audioRepository = temporaryRepositoryFactory.getAudioRepository(uriLoader);
+            VideoRepository videoRepository = temporaryRepositoryFactory.getVideoRepository(uriLoader);
+            CoubRepository coubRepository = temporaryRepositoryFactory.getCoubRepository();
+
             CoubProcessor coubProcessor = new CoubProcessor(
                     coubRepository,
                     streamMerger,
@@ -46,7 +41,7 @@ public class Main {
                     new CoubChannelAPIFactory()
             );
 
-            likesLoader.load(configuration.getProperty("channel"));
+            likesLoader.load(configuration.getProperty("COUB_LOADER_CHANNEL"));
 
         }catch (Exception e) {
             e.printStackTrace();
