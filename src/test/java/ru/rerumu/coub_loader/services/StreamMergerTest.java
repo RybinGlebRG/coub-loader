@@ -34,14 +34,14 @@ class StreamMergerTest {
 
         Path res = streamMerger.merge(1111L, video, audio);
 
-        Files.exists(tmpDir.resolve("conf.txt"));
+//        Files.exists(tmpDir.resolve("conf.txt"));
         Assertions.assertEquals(tmpDir.resolve("1111.mkv"),res);
 
-        String shouldString = String.format("file 'file:%s'\n", video.toString()).repeat(1000);
-        String resString = Files.readString(tmpDir.resolve("conf.txt"), StandardCharsets.UTF_8);
-        Assertions.assertEquals(shouldString,resString);
+//        String shouldString = String.format("file 'file:%s'\n", video.toString()).repeat(1000);
+//        String resString = Files.readString(tmpDir.resolve("conf.txt"), StandardCharsets.UTF_8);
+//        Assertions.assertEquals(shouldString,resString);
 
-        Mockito.verify(ffmpegAPI).merge(tmpDir.resolve("conf.txt"), audio, tmpDir.resolve("temp_res.mkv"));
+        Mockito.verify(ffmpegAPI).merge(video, audio, tmpDir.resolve("temp_res.mkv"));
     }
 
     @Test
@@ -54,14 +54,14 @@ class StreamMergerTest {
 
         Path res = streamMerger.merge(1111L, video);
 
-        Files.exists(tmpDir.resolve("conf.txt"));
+//        Files.exists(tmpDir.resolve("conf.txt"));
         Assertions.assertEquals(tmpDir.resolve("1111.mkv"),res);
 
-        String shouldString = String.format("file 'file:%s'\n", video.toString());
-        String resString = Files.readString(tmpDir.resolve("conf.txt"), StandardCharsets.UTF_8);
-        Assertions.assertEquals(shouldString,resString);
+//        String shouldString = String.format("file 'file:%s'\n", video.toString());
+//        String resString = Files.readString(tmpDir.resolve("conf.txt"), StandardCharsets.UTF_8);
+//        Assertions.assertEquals(shouldString,resString);
 
-        Mockito.verify(ffmpegAPI).merge(tmpDir.resolve("conf.txt"), tmpDir.resolve("temp_res.mkv"));
+        Mockito.verify(ffmpegAPI).merge(video, tmpDir.resolve("temp_res.mkv"));
     }
 
     @Test

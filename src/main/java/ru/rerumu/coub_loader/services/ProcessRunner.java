@@ -19,7 +19,7 @@ public class ProcessRunner {
     private final List<String> args;
 
     public ProcessRunner(List<String> args){
-        logger.debug("Created new process: '"+args.toString()+"'");
+        logger.debug("Created new process: '"+String.join(" ",args)+"'");
         this.args = args;
     }
 

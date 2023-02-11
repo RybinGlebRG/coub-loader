@@ -46,38 +46,40 @@ public class StreamMerger {
         }
     }
 
-    private Path prepareConfig(Path video) throws IOException {
-        return prepareConfig(video,1000);
-    }
-
-    private Path prepareConfig(Path video, int n) throws IOException {
-        Path confPath = tmpDir.resolve("conf.txt");
-        Files.writeString(
-                confPath,
-                String.format("file 'file:%s'\n", video.toString()).repeat(n),
-                StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING,
-                StandardOpenOption.WRITE
-        );
-        return confPath;
-    }
+//    @Deprecated
+//    private Path prepareConfig(Path video) throws IOException {
+//        return prepareConfig(video,1000);
+//    }
+//
+//    @Deprecated
+//    private Path prepareConfig(Path video, int n) throws IOException {
+//        Path confPath = tmpDir.resolve("conf.txt");
+//        Files.writeString(
+//                confPath,
+//                String.format("file 'file:%s'\n", video.toString()).repeat(n),
+//                StandardCharsets.UTF_8,
+//                StandardOpenOption.CREATE,
+//                StandardOpenOption.TRUNCATE_EXISTING,
+//                StandardOpenOption.WRITE
+//        );
+//        return confPath;
+//    }
     public Path merge(long coubId, Path video, Path audio) throws IOException, MergeException {
         clearTmp();
-        Path confPath = prepareConfig(video);
+//        Path confPath = prepareConfig(video);
         Path tempRes = tmpDir.resolve("temp_res.mkv");
         Path finalRes = tmpDir.resolve(coubId+".mkv");
-        ffmpegAPI.merge(confPath,audio,tempRes);
+        ffmpegAPI.merge(video,audio,tempRes);
         Files.move(tempRes,finalRes);
         return finalRes;
     }
 
     public Path merge(long coubId, Path video) throws IOException, MergeException {
         clearTmp();
-        Path confPath = prepareConfig(video,1);
+//        Path confPath = prepareConfig(video,1);
         Path tempRes = tmpDir.resolve("temp_res.mkv");
         Path finalRes = tmpDir.resolve(coubId+".mkv");
-        ffmpegAPI.merge(confPath,tempRes);
+        ffmpegAPI.merge(video,tempRes);
         Files.move(tempRes,finalRes);
         return finalRes;
     }
