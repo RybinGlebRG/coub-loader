@@ -39,7 +39,7 @@ public class CoubProcessor {
             MergeException {
         logger.info(String.format("Processing coubId='%d'",coub.getId()));
         if (coubRepository.contains(coub)){
-            logger.error("Coub already processed");
+            logger.debug("Coub already processed");
             throw new CoubAlreadyProcessedException();
         }
 

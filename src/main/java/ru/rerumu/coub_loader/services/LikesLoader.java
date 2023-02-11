@@ -3,6 +3,7 @@ package ru.rerumu.coub_loader.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.rerumu.coub_loader.api.CoubChannelAPI;
+import ru.rerumu.coub_loader.exceptions.CoubAlreadyProcessedException;
 import ru.rerumu.coub_loader.exceptions.HttpErrorException;
 import ru.rerumu.coub_loader.factories.CoubChannelAPIFactory;
 import ru.rerumu.coub_loader.models.Coub;
@@ -30,7 +31,9 @@ public class LikesLoader {
             for (Coub coub : coubList) {
                 try {
                     coubProcessor.process(coub);
-                } catch (Exception e) {
+                }
+                catch (CoubAlreadyProcessedException ignore){}
+                catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
             }
